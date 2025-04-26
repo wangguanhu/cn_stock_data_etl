@@ -2,6 +2,8 @@ import random
 import time
 from prefect import flow, task
 from datetime import datetime, timedelta
+import chinese_calendar as calendar
+
 import sys
 
 sys.path.append(".")
@@ -42,7 +44,10 @@ def load_data(df):
 def stock_etl_flow():
     """Prefect工作流：ETL主流程"""
     # time.sleep(random.uniform(600 , 3600))
-    
+    today = datetime.now().date()
+    is_workday = calendar.is_workday(today)  # 自动考虑节假日和调休
+    if not is_workday:
+        return
     try:
         # 从数据库获取所有股票代码
         db_ops = StockCodeOperations(DB_CONFIG)
@@ -59,5 +64,5 @@ def stock_etl_flow():
 
 
 if __name__ == "__main__":
-    # stock_etl_flow.serve(name="daily_stock_data", cron="0 15 * * *")
-    stock_etl_flow()
+    stock_etl_flow.serve(name="daily_stock_data", cron="0 15 * * *")
+    # stock_etl_flow()

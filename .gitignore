@@ -3,3 +3,4 @@
 /logs
 /readme.md
 /tmp.ipynb
+*.pyc
